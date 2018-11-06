@@ -1,0 +1,37 @@
+version: '3'
+services:
+  sam-local:
+    build: .
+    command: ./start-sam.sh
+    ports:
+      - '3000:3000'
+    volumes:
+      - .:/var/opt/
+      - /var/run/docker.sock:/var/run/docker.sock # AWS SAM Localをdocker-composeと使うときに必要
+    depends_on:
+      - db
+      - go
+    environment:
+      - VOLUME=$PWD
+    env_file:
+      - .env # 環境変数をコンテナ内で読み込み
+
+  go:
+    command: ./gobuild.sh
+    build:
+      context: ./
+      dockerfile: ./Dockerfile_go
+    volumes:
+      - .:/go/src
+
+  db:
+    environment:
+      - MYSQL_ROOT_PASSWORD=docker
+      - MYSQL_PASSWORD=docker
+      - MYSQL_USER=docker
+      - MYSQL_DATABASE=reportdb
+    build: 
+       context: ./
+       dockerfile: ./Dockerfile_mysql
+    ports:
+      - "3306:3306"
