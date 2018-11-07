@@ -1,6 +1,6 @@
 # aws-sam-api
 
-## Starth
+## Start
 
 touch .env
 docker-compose build --force-rm
